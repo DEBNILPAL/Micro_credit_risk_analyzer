@@ -363,26 +363,22 @@ Feel free to ask me anything about credit risk, machine learning, or regulatory 
   };
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-      {/* Floating Chat Button - Truly fixed to viewport */}
-      <div className="absolute bottom-6 right-6 pointer-events-auto">
+    <>
+      {/* Floating Chat Button - Fixed to viewport */}
+      <div className="fixed bottom-6 right-6 z-[10000] pointer-events-auto">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-xl transition-all duration-300 flex items-center justify-center transform hover:scale-110 ${
             isOpen ? 'rotate-180' : 'rotate-0'
           }`}
-          style={{ position: 'relative', zIndex: 10000 }}
         >
           {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </button>
       </div>
 
-      {/* Chat Window - Truly fixed to viewport when open */}
+      {/* Chat Window - Fixed to bottom right corner */}
       {isOpen && (
-        <div 
-          className="absolute bottom-24 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col pointer-events-auto max-w-[calc(100vw-3rem)] sm:max-w-96"
-          style={{ position: 'relative', zIndex: 9999 }}
-        >
+        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-[9999] max-w-[calc(100vw-3rem)] sm:max-w-96">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-2xl">
             <div className="flex items-center space-x-2">
@@ -465,7 +461,7 @@ Feel free to ask me anything about credit risk, machine learning, or regulatory 
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
