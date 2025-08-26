@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Loader } from 'lucide-react';
 import AboutModal from './AboutModal';
+import TypingEffect from './TypingEffect';
+import FloatingParticles from './FloatingParticles';
+import AnimatedCounter from './AnimatedCounter';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,9 +25,10 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 transition-all duration-500 ${isNavigating ? 'opacity-75 scale-95' : 'opacity-100 scale-100'}`}>
+    <div className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 transition-all duration-500 ${isNavigating ? 'opacity-75 scale-95' : 'opacity-100 scale-100'} relative overflow-hidden`}>
+      <FloatingParticles />
       {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-md shadow-soft fixed w-full z-50 border-b border-slate-200">
+      <nav className="bg-white/90 backdrop-blur-md shadow-soft fixed w-full z-50 border-b border-slate-200 animate-fade-in-down">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-18">
             <div className="flex items-center">
@@ -105,21 +109,26 @@ const LandingPage: React.FC = () => {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
-            <div className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-brand-200 rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-soft mb-4 sm:mb-6">
+            <div className="mb-6 sm:mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+              <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-brand-200 rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-soft mb-4 sm:mb-6 hover:shadow-lg hover:scale-105 transition-all duration-300">
                 <div className="w-2 h-2 bg-success-500 rounded-full mr-2 sm:mr-3 animate-pulse"></div>
                 <span className="text-brand-700 font-semibold text-xs sm:text-sm">RBI Compliant • ML-Powered • Real-time Analysis</span>
               </div>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 sm:mb-8 px-2">
-              <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent block sm:inline">AI-Powered Credit Scoring for</span>
-              <span className="bg-gradient-to-r from-brand-600 to-primary-600 bg-clip-text text-transparent block sm:inline">Financial Inclusion</span>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 px-2 min-h-[120px] sm:min-h-[140px] flex items-center justify-center animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+              <TypingEffect 
+                text="AI-Powered Credit Scoring for Financial Inclusion"
+                className="bg-gradient-to-r from-slate-800 via-slate-700 to-brand-600 bg-clip-text text-transparent"
+                typingSpeed={100}
+                erasingSpeed={100}
+                pauseDuration={4000}
+              />
             </h1>
-            <p className="text-base sm:text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium px-4">
+            <p className="text-base sm:text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium px-4 animate-fade-in-up" style={{animationDelay: '0.9s'}}>
               Revolutionizing credit assessment for India's unbanked population using alternative financial signals 
               from UPI transactions, mobile recharges, and bill payments.
             </p>
-            <div className="mt-8 sm:mt-12">
+            <div className="mt-8 sm:mt-12 animate-fade-in-up" style={{animationDelay: '1.2s'}}>
               <button 
                 onClick={handleGetStarted}
                 disabled={isNavigating}
@@ -153,33 +162,33 @@ const LandingPage: React.FC = () => {
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">The Problem</h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto px-4">
-              In India, over 65% of adults don't have formal credit history, excluding millions from financial services.
+              In India, over <AnimatedCounter end={65} suffix="%" /> of adults don't have formal credit history, excluding millions from financial services.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             <div className="text-center">
-              <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
                 <i className="fas fa-user-times text-red-600 text-2xl"></i>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Students</h3>
               <p className="text-gray-600 text-sm">No credit history despite digital activity</p>
             </div>
-            <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style={{animationDelay: '0.5s'}}>
                 <i className="fas fa-briefcase text-orange-600 text-2xl"></i>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Gig Workers</h3>
               <p className="text-gray-600 text-sm">Irregular income patterns</p>
             </div>
-            <div className="text-center">
-              <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+              <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style={{animationDelay: '1s'}}>
                 <i className="fas fa-hammer text-yellow-600 text-2xl"></i>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Daily Wage Earners</h3>
               <p className="text-gray-600 text-sm">Cash-based transactions</p>
             </div>
-            <div className="text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style={{animationDelay: '1.5s'}}>
                 <i className="fas fa-store text-purple-600 text-2xl"></i>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Small Shopkeepers</h3>
