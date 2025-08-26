@@ -25,6 +25,7 @@ const UserTable: React.FC<UserTableProps> = ({ riskScores }) => {
     .sort((a, b) => {
       const aVal = a[sortField];
       const bVal = b[sortField];
+      const label = sortField.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       
       if (typeof aVal === 'number' && typeof bVal === 'number') {
         return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;

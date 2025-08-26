@@ -126,7 +126,7 @@ const CreditReportDashboard: React.FC<CreditReportDashboardProps> = ({ riskScore
         <h3 className="font-bold text-slate-800 mb-6">Score Components</h3>
         <div className="space-y-4">
           {Object.entries(riskScore.score_components || {}).map(([key, component]) => {
-            const label = key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             const percentage = (component.score / 100) * 100;
             
             return (
