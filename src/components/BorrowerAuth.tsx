@@ -45,54 +45,34 @@ const BorrowerAuth: React.FC<BorrowerAuthProps> = ({ onLogin }) => {
     
     try {
       if (isLogin) {
-        // Login with API
-        const credentials: LoginCredentials = {
-          email: formData.email,
-          password: formData.password
-        };
+        // Demo login - simulate successful authentication
+        const demoUsers = [
+          { email: 'john@example.com', password: 'demo123' },
+          { email: 'jane@example.com', password: 'demo123' },
+          { email: 'demo@test.com', password: 'demo' }
+        ];
         
-        const response = await apiService.login(credentials);
-        const user = response.user;
+        const validUser = demoUsers.find(u => u.email === formData.email && u.password === formData.password);
         
-        // Fetch user's latest loan application data
-        let loanData = {
-          monthlyIncome: 0,
-          existingDebt: 0,
-          loanPurpose: 'business',
-          requestedAmount: 0
-        };
-        
-        try {
-          const creditScore = await apiService.getCreditScore(user.id);
-          // If we have credit score data, it means user has loan application
-          if (creditScore) {
-            // Try to get loan application details - for now use reasonable defaults
-            loanData = {
-              monthlyIncome: creditScore.monthly_income || 0,
-              existingDebt: creditScore.existing_debt || 0,
-              loanPurpose: creditScore.loan_purpose || 'business',
-              requestedAmount: creditScore.requested_amount || 0
-            };
-          }
-        } catch (err) {
-          console.log('No existing loan application found, using defaults');
+        if (!validUser) {
+          setError('Invalid credentials. Try: john@example.com / demo123');
+          return;
         }
         
-        // Convert API user to BorrowerData format
         const borrowerData: BorrowerData = {
-          id: user.id.toString(),
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
-          dateOfBirth: user.date_of_birth,
-          monthlyIncome: loanData.monthlyIncome,
-          existingDebt: loanData.existingDebt,
-          loanPurpose: loanData.loanPurpose,
-          requestedAmount: loanData.requestedAmount
+          id: '1',
+          name: 'John Doe',
+          email: formData.email,
+          phone: '+91-9876543210',
+          address: '123 Main Street, Mumbai',
+          dateOfBirth: '1990-01-01',
+          monthlyIncome: 45000,
+          existingDebt: 15000,
+          loanPurpose: 'Business expansion',
+          requestedAmount: 100000
         };
         
-        onLogin(user.id.toString(), borrowerData);
+        onLogin('1', borrowerData);
       } else {
         // Validate signup form
         if (!formData.name || !formData.phone || !formData.address || !formData.dateOfBirth || 
@@ -111,31 +91,9 @@ const BorrowerAuth: React.FC<BorrowerAuthProps> = ({ onLogin }) => {
           return;
         }
         
-        // Register with API
-        const registerData: RegisterData = {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          phone: formData.phone,
-          address: formData.address,
-          date_of_birth: formData.dateOfBirth
-        };
-        
-        const registerResponse = await apiService.register(registerData);
-        
-        // Apply for loan immediately after registration
-        const loanApplication = {
-          monthly_income: parseInt(formData.monthlyIncome),
-          existing_debt: parseInt(formData.existingDebt || '0'),
-          loan_purpose: formData.loanPurpose,
-          requested_amount: parseInt(formData.requestedAmount)
-        };
-        
-        await apiService.applyForLoan(loanApplication, registerResponse.user_id);
-        
-        // Create borrower data for login
+        // Demo signup - simulate successful registration
         const newBorrowerData: BorrowerData = {
-          id: registerResponse.user_id.toString(),
+          id: '2',
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
@@ -147,7 +105,7 @@ const BorrowerAuth: React.FC<BorrowerAuthProps> = ({ onLogin }) => {
           requestedAmount: parseInt(formData.requestedAmount)
         };
         
-        onLogin(registerResponse.user_id.toString(), newBorrowerData);
+        onLogin('2', newBorrowerData);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
