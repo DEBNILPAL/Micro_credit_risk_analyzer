@@ -47,15 +47,15 @@ const BorrowerAuth: React.FC<BorrowerAuthProps> = ({ onLogin }) => {
       if (isLogin) {
         // Demo login - simulate successful authentication
         const demoUsers = [
-          { email: 'john@example.com', password: 'demo123' },
-          { email: 'jane@example.com', password: 'demo123' },
-          { email: 'demo@test.com', password: 'demo' }
+          { email: 'john@example.com', password: 'password123' },
+          { email: 'jane@example.com', password: 'password123' },
+          { email: 'demo@test.com', password: 'demo123' }
         ];
         
         const validUser = demoUsers.find(u => u.email === formData.email && u.password === formData.password);
         
         if (!validUser) {
-          setError('Invalid credentials. Try: john@example.com / demo123');
+          setError('Invalid credentials. Try: john@example.com / password123');
           return;
         }
         
