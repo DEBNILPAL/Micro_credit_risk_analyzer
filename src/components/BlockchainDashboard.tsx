@@ -51,7 +51,10 @@ const BlockchainDashboard: React.FC = () => {
     }
     
     // For production/Netlify deployment, use environment variable or show disconnected
-    return process.env.REACT_APP_API_URL || null;
+    const apiUrl = process.env.REACT_APP_API_URL;
+    console.log('🔍 DEBUG - Environment API URL:', apiUrl);
+    console.log('🔍 DEBUG - Current hostname:', window.location.hostname);
+    return apiUrl || null;
   };
 
   const fetchBlockchainData = async () => {
