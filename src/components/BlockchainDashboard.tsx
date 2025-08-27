@@ -34,6 +34,7 @@ const BlockchainDashboard: React.FC = () => {
   const [verificationStatus, setVerificationStatus] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isTraining, setIsTraining] = useState(false);
+  const [backendConnected, setBackendConnected] = useState(false);
 
   const handleBackToHome = () => {
     navigate('/');
@@ -43,26 +44,44 @@ const BlockchainDashboard: React.FC = () => {
     fetchBlockchainData();
   }, []);
 
+  const getApiUrl = () => {
+    // Check if we're in development (localhost)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:8000';
+    }
+    
+    // For production/Netlify deployment, use environment variable or show disconnected
+    return process.env.REACT_APP_API_URL || null;
+  };
+
   const fetchBlockchainData = async () => {
     try {
       setIsLoading(true);
+      const baseUrl = getApiUrl();
+      
+      // If no backend URL available (production without backend), show disconnected
+      if (!baseUrl) {
+        setBackendConnected(false);
+        throw new Error('Backend not configured for production');
+      }
       
       // Fetch blockchain statistics
-      const statsResponse = await fetch('http://localhost:8000/api/blockchain/statistics');
+      const statsResponse = await fetch(`${baseUrl}/api/blockchain/statistics`);
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setBlockchainStats(statsData.blockchain_statistics);
+        setBackendConnected(true);
       }
 
       // Fetch model accuracy
-      const accuracyResponse = await fetch('http://localhost:8000/api/ml/model-accuracy');
+      const accuracyResponse = await fetch(`${baseUrl}/api/ml/model-accuracy`);
       if (accuracyResponse.ok) {
         const accuracyData = await accuracyResponse.json();
         setModelAccuracy(accuracyData);
       }
 
       // Verify blockchain integrity
-      const verificationResponse = await fetch('http://localhost:8000/api/blockchain/verify-integrity/credit_score');
+      const verificationResponse = await fetch(`${baseUrl}/api/blockchain/verify-integrity/credit_score`);
       if (verificationResponse.ok) {
         const verificationData = await verificationResponse.json();
         setVerificationStatus(verificationData.verification_result);
@@ -70,6 +89,28 @@ const BlockchainDashboard: React.FC = () => {
 
     } catch (error) {
       console.error('Error fetching blockchain data:', error);
+      
+      // Set default values when backend is not available
+      setBlockchainStats({
+        credit_blockchain: { total_blocks: 0, average_credit_score: 0 },
+        transaction_blockchain: { total_blocks: 0, total_transaction_volume: 0 },
+        verification_history: []
+      });
+      setModelAccuracy({
+        model_trained: false,
+        ensemble_accuracy: 0,
+        blockchain_integrity: 0,
+        blockchain_verified: false,
+        total_predictions: 0,
+        model_hash: ''
+      });
+      setVerificationStatus({
+        valid: false,
+        total_blocks: 0,
+        verified_blocks: 0,
+        integrity_score: 0
+      });
+      setBackendConnected(false);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +119,13 @@ const BlockchainDashboard: React.FC = () => {
   const trainModel = async () => {
     try {
       setIsTraining(true);
-      const response = await fetch('http://localhost:8000/api/ml/train-model', {
+      const baseUrl = getApiUrl();
+      
+      if (!baseUrl) {
+        throw new Error('Backend not configured for production');
+      }
+      
+      const response = await fetch(`${baseUrl}/api/ml/train-model`, {
         method: 'POST',
       });
       
@@ -96,7 +143,13 @@ const BlockchainDashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error training model:', error);
-      alert(`❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Check if it's a network connectivity issue
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        alert(`🚨 Backend Server Not Running!\n\n📋 Quick Start Options:\n\n1️⃣ Double-click: start_backend_simple.bat\n2️⃣ Or run: python backend/simple_main.py\n\n💡 Server will start at http://localhost:8000\n📖 See QUICK_START.md for detailed instructions`);
+      } else {
+        alert(`❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     } finally {
       setIsTraining(false);
     }
@@ -141,6 +194,63 @@ const BlockchainDashboard: React.FC = () => {
           <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto">
             Real-time Dynamic Scoring with Immutable Blockchain Technology for Maximum Reliability and Transparency
           </p>
+          
+          {/* Backend Status Indicator */}
+          <div className="mt-4 flex justify-center">
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+              backendConnected 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              <div className={`w-2 h-2 rounded-full mr-2 ${
+                backendConnected ? 'bg-green-500' : 'bg-red-500'
+              }`}></div>
+              {backendConnected ? '🟢 Connected' : '🔴 Disconnected'}
+            </div>
+          </div>
+          
+          {!backendConnected && (
+            <div className="mt-3 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-300 rounded-xl max-w-2xl mx-auto">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-yellow-800 mb-2">🔌 Backend Connection Required</h3>
+                <p className="text-sm text-yellow-700 mb-3">
+                  {window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'To use the "Initialize Model" feature, please start the backend server first.'
+                    : 'This is a frontend-only demo. Backend features are not available in production.'}
+                </p>
+                
+                {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+                  <>
+                    <div className="bg-white/70 rounded-lg p-3 mb-3">
+                      <h4 className="font-medium text-yellow-800 mb-2">📋 Quick Start Options:</h4>
+                      <div className="space-y-2 text-sm text-yellow-700">
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-mono text-xs">Option 1:</span>
+                          <span>Double-click <code className="bg-yellow-200 px-1 rounded font-mono">start_backend_simple.bat</code></span>
+                        </div>
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded font-mono text-xs">Option 2:</span>
+                          <span>Run <code className="bg-yellow-200 px-1 rounded font-mono">python backend/simple_main.py</code></span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-yellow-600">
+                      💡 Server will start at <code className="bg-yellow-200 px-1 rounded">http://localhost:8000</code>
+                    </div>
+                  </>
+                )}
+                
+                {!(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <p className="text-sm text-blue-700">
+                      🌐 This is a frontend demonstration. To enable full functionality, deploy the backend to a cloud service and set the <code className="bg-blue-200 px-1 rounded">REACT_APP_API_URL</code> environment variable.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Model Training Section */}

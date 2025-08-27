@@ -1,4 +1,15 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+// Environment-based API URL configuration
+const getApiBaseUrl = () => {
+  // Check if we're in development (localhost)
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  }
+  
+  // For production/Netlify deployment, use environment variable or fallback
+  return process.env.REACT_APP_API_URL || 'https://your-backend-url.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface User {
   id: number;
