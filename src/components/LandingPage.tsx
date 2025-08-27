@@ -75,7 +75,13 @@ const LandingPage: React.FC = () => {
               </button>
             </div>
             {/* Mobile menu */}
-            <div className="md:hidden flex items-center space-x-2">
+            <div className="md:hidden flex items-center space-x-1">
+              <button 
+                onClick={() => navigate('/blockchain')}
+                className="px-2 py-2 text-xs rounded-lg font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors"
+              >
+                🔗
+              </button>
               <button 
                 onClick={() => navigate('/borrower')}
                 className="px-3 py-2 text-xs rounded-lg font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors"

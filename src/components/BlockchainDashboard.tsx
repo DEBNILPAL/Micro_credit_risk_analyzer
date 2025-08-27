@@ -85,10 +85,18 @@ const BlockchainDashboard: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log('Model training completed:', result);
+        
+        // Show success message
+        alert(`✅ ${result.message}\n\n🔗 Blockchain blocks created: ${result.blockchain_blocks_created}\n⏱️ Training time: ${result.training_time}\n🎯 Model accuracy: ${(result.accuracies.dynamic_scoring * 100).toFixed(1)}%`);
+        
         await fetchBlockchainData(); // Refresh data
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Training failed: ${errorData.detail}`);
       }
     } catch (error) {
       console.error('Error training model:', error);
+      alert(`❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsTraining(false);
     }
@@ -126,29 +134,40 @@ const BlockchainDashboard: React.FC = () => {
         </div>
 
         {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">
+        <div className="text-center px-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
             🔗 Blockchain-Verified Credit Risk Analysis
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto">
             Real-time Dynamic Scoring with Immutable Blockchain Technology for Maximum Reliability and Transparency
           </p>
         </div>
 
         {/* Model Training Section */}
         {!modelAccuracy?.model_trained && (
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold mb-2">🧠 Real-time Dynamic Scoring Model</h3>
-                <p className="text-blue-100">Initialize the dynamic scoring model for real-time predictions</p>
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+              <div className="flex-1">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">🧠 Real-time Dynamic Scoring Model</h3>
+                <p className="text-blue-100 text-sm sm:text-base">Initialize the dynamic scoring model for real-time predictions</p>
               </div>
               <button
                 onClick={trainModel}
                 disabled={isTraining}
-                className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors disabled:opacity-50"
+                className="bg-white text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-full sm:w-auto text-sm sm:text-base"
               >
-                {isTraining ? 'Initializing...' : 'Initialize Model'}
+                {isTraining ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span className="hidden sm:inline">Initializing Model...</span>
+                    <span className="sm:hidden">Initializing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden sm:inline">🚀 Initialize Model</span>
+                    <span className="sm:hidden">🚀 Initialize</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

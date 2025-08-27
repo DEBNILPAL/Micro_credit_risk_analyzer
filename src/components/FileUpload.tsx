@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, AlertCircle, CheckCircle, Shield } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { RiskScore, DashboardStats, UserData } from '../types';
 import { MLCreditEngine } from '../utils/mlCreditEngine';
 
@@ -15,6 +15,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading, set
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalErrorDetails, setModalErrorDetails] = useState({ title: '', message: '', missingColumns: [] as string[] });
+  const [isFormatSectionExpanded, setIsFormatSectionExpanded] = useState(false);
 
   const validateCSVFormat = (headers: string[]): { isValid: boolean; missingColumns: string[] } => {
     const requiredColumns = [
@@ -495,19 +496,38 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading, set
         </div>
       )}
 
-      {/* Sample Data Format */}
+      {/* Sample Data Format - Collapsible */}
       <div className="bg-white rounded-2xl shadow-soft border border-slate-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-4 border-b border-slate-200">
-          <h3 className="font-bold text-slate-800 flex items-center text-sm sm:text-base">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-brand-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-              <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-brand-600" />
+        <button
+          onClick={() => setIsFormatSectionExpanded(!isFormatSectionExpanded)}
+          className="w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-4 border-b border-slate-200 hover:from-slate-100 hover:to-slate-150 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-inset"
+        >
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-slate-800 flex items-center text-sm sm:text-base">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-brand-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-brand-600" />
+              </div>
+              Expected CSV Format
+            </h3>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-slate-500 hidden sm:inline">
+                {isFormatSectionExpanded ? 'Click to collapse' : 'Click to view format details'}
+              </span>
+              {isFormatSectionExpanded ? (
+                <ChevronUp className="h-4 w-4 text-slate-600 transition-transform duration-200" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-slate-600 transition-transform duration-200" />
+              )}
             </div>
-            Expected CSV Format
-          </h3>
-        </div>
+          </div>
+        </button>
         
-        <div className="p-4 sm:p-6 space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4">
+        {/* Collapsible Content */}
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isFormatSectionExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+          <div className="p-4 sm:p-6 space-y-4">
+            <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4">
             <div className="mb-3">
               <h4 className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Required Columns:</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
@@ -638,6 +658,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileProcessed, isLoading, set
                   <li>• <strong>Compliance Checks:</strong> Automated regulatory validation</li>
                 </ul>
               </div>
+            </div>
             </div>
           </div>
         </div>

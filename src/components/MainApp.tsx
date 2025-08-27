@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, Upload, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Shield, Upload, BarChart3, RefreshCw } from 'lucide-react';
 import Header from './Header';
 import FileUpload from './FileUpload';
 import Dashboard from './Dashboard';
@@ -19,10 +19,52 @@ const MainApp: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'rbi-compliance' | 'ml-insights'>('overview');
+  const [lastAnalysisDate, setLastAnalysisDate] = useState<string | null>(null);
+
+  // Load persisted data on component mount
+  useEffect(() => {
+    const savedScores = localStorage.getItem('creditAnalysis_riskScores');
+    const savedStats = localStorage.getItem('creditAnalysis_dashboardStats');
+    const savedDate = localStorage.getItem('creditAnalysis_date');
+    
+    if (savedScores && savedStats) {
+      try {
+        setRiskScores(JSON.parse(savedScores));
+        setDashboardStats(JSON.parse(savedStats));
+        setLastAnalysisDate(savedDate);
+      } catch (error) {
+        console.error('Error loading saved analysis data:', error);
+        // Clear corrupted data
+        localStorage.removeItem('creditAnalysis_riskScores');
+        localStorage.removeItem('creditAnalysis_dashboardStats');
+        localStorage.removeItem('creditAnalysis_date');
+      }
+    }
+  }, []);
 
   const handleFileProcessed = (scores: RiskScore[], stats: DashboardStats) => {
     setRiskScores(scores);
     setDashboardStats(stats);
+    const currentDate = new Date().toLocaleString();
+    setLastAnalysisDate(currentDate);
+    
+    // Persist data to localStorage
+    localStorage.setItem('creditAnalysis_riskScores', JSON.stringify(scores));
+    localStorage.setItem('creditAnalysis_dashboardStats', JSON.stringify(stats));
+    localStorage.setItem('creditAnalysis_date', currentDate);
+  };
+
+  const handleRefreshData = () => {
+    // Clear all stored data
+    localStorage.removeItem('creditAnalysis_riskScores');
+    localStorage.removeItem('creditAnalysis_dashboardStats');
+    localStorage.removeItem('creditAnalysis_date');
+    
+    // Reset state
+    setRiskScores([]);
+    setDashboardStats(null);
+    setLastAnalysisDate(null);
+    setActiveTab('overview');
   };
 
   const handleBackToLanding = () => {
@@ -60,16 +102,37 @@ const MainApp: React.FC = () => {
           {/* File Upload Section */}
           <div className={`transition-all duration-500 delay-200 ${isVisible ? 'animate-slideInLeft' : 'opacity-0'}`}>
             <div className="mb-6 sm:mb-8">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
-                  <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
+                    <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
+                      Upload Transaction Data
+                    </h2>
+                    <p className="text-slate-600 mt-1 text-sm sm:text-base">
+                      Upload your CSV or JSON file to begin risk analysis
+                      {lastAnalysisDate && (
+                        <span className="block text-xs text-green-600 font-medium mt-1">
+                          📊 Last analysis: {lastAnalysisDate}
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
-                    Upload Transaction Data
-                  </h2>
-                  <p className="text-slate-600 mt-1 text-sm sm:text-base">Upload your CSV or JSON file to begin risk analysis</p>
-                </div>
+                
+                {/* Refresh Button */}
+                {(riskScores.length > 0 || dashboardStats) && (
+                  <button
+                    onClick={handleRefreshData}
+                    className="group flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                  >
+                    <RefreshCw className="h-4 w-4 group-hover:rotate-180 transition-transform duration-300" />
+                    <span className="hidden sm:inline">Clear Analysis</span>
+                    <span className="sm:hidden">Clear</span>
+                  </button>
+                )}
               </div>
             </div>
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-large border border-slate-200 p-4 sm:p-8">
@@ -104,16 +167,34 @@ const MainApp: React.FC = () => {
           {dashboardStats && !isLoading && (
             <div className={`transition-all duration-500 delay-300 ${isVisible ? 'animate-fadeIn' : 'opacity-0'}`}>
               <div className="mb-6 sm:mb-8">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
-                    <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
+                        Risk Analysis Dashboard
+                      </h2>
+                      <p className="text-slate-600 mt-1 text-sm sm:text-base">
+                        Comprehensive insights and compliance overview
+                        {lastAnalysisDate && (
+                          <span className="block text-xs text-blue-600 font-medium mt-1">
+                            💾 Data persisted • Analysis from: {lastAnalysisDate}
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
-                      Risk Analysis Dashboard
-                    </h2>
-                    <p className="text-slate-600 mt-1 text-sm sm:text-base">Comprehensive insights and compliance overview</p>
-                  </div>
+                  
+                  {/* Additional Refresh Button in Dashboard */}
+                  <button
+                    onClick={handleRefreshData}
+                    className="group flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+                  >
+                    <RefreshCw className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
+                    <span className="hidden sm:inline">Refresh</span>
+                  </button>
                 </div>
               </div>
               
@@ -183,10 +264,32 @@ const MainApp: React.FC = () => {
           {riskScores.length > 0 && !isLoading && (
             <div className={`transition-all duration-500 delay-400 ${isVisible ? 'animate-slideInRight' : 'opacity-0'}`}>
               <div className="mb-4 sm:mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
-                  Risk Assessment Results
-                </h2>
-                <p className="text-slate-600 text-sm sm:text-base">Detailed analysis of {riskScores.length} applicants with risk scores and recommendations</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
+                      Risk Assessment Results
+                    </h2>
+                    <p className="text-slate-600 text-sm sm:text-base">
+                      Detailed analysis of {riskScores.length} applicants with risk scores and recommendations
+                      {lastAnalysisDate && (
+                        <span className="block text-xs text-purple-600 font-medium mt-1">
+                          🔄 Auto-saved • Last updated: {lastAnalysisDate}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  
+                  {/* Export/Refresh Actions */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleRefreshData}
+                      className="group flex items-center space-x-1 px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+                    >
+                      <RefreshCw className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
+                      <span className="hidden sm:inline">Reset</span>
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-large border border-slate-200 overflow-hidden">
                 <UserTable riskScores={riskScores} />

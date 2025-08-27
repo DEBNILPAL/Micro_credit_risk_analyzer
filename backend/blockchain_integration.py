@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import sqlite3
 from sqlalchemy.orm import Session
-from main import get_db
 
 # Blockchain Router for API endpoints
 blockchain_router = APIRouter(prefix="/api/blockchain", tags=["blockchain"])
