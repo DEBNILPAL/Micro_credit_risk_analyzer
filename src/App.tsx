@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import MainApp from './components/MainApp';
 import BorrowerPortal from './components/BorrowerPortal';
+import BlockchainDashboard from './components/BlockchainDashboard';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/app" element={<MainApp />} />
         <Route path="/borrower" element={<BorrowerPortal />} />
+        <Route path="/blockchain" element={<BlockchainDashboard />} />
       </Routes>
     </Router>
   );

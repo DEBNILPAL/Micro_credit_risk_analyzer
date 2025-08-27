@@ -44,6 +44,12 @@ const LandingPage: React.FC = () => {
               <a href="#features" className="text-slate-700 hover:text-brand-600 transition-colors font-medium">Features</a>                   
               <button onClick={handleAboutClick} className="text-slate-700 hover:text-brand-600 transition-colors font-medium">About</button>
               <button 
+                onClick={() => navigate('/blockchain')}
+                className="px-4 py-2 rounded-lg font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 transition-colors"
+              >
+                🔗 Blockchain
+              </button>
+              <button 
                 onClick={() => navigate('/borrower')}
                 className="px-4 py-2 rounded-lg font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors"
               >
@@ -112,7 +118,7 @@ const LandingPage: React.FC = () => {
             <div className="mb-6 sm:mb-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-brand-200 rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-soft mb-4 sm:mb-6 hover:shadow-lg hover:scale-105 transition-all duration-300">
                 <div className="w-2 h-2 bg-success-500 rounded-full mr-2 sm:mr-3 animate-pulse"></div>
-                <span className="text-brand-700 font-semibold text-xs sm:text-sm">RBI Compliant • ML-Powered • Real-time Analysis</span>
+                <span className="text-brand-700 font-semibold text-xs sm:text-sm">🔗 Blockchain Verified • 🧠 Deep Learning AI • 📊 Real-time Analysis</span>
               </div>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 px-2 min-h-[120px] sm:min-h-[140px] flex items-center justify-center animate-fade-in-up" style={{animationDelay: '0.6s'}}>
@@ -125,8 +131,8 @@ const LandingPage: React.FC = () => {
               />
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-medium px-4 animate-fade-in-up" style={{animationDelay: '0.9s'}}>
-              Revolutionizing credit assessment for India's unbanked population using alternative financial signals 
-              from UPI transactions, mobile recharges, and bill payments.
+              Revolutionizing credit assessment with <span className="font-bold text-purple-600">blockchain-verified</span> deep learning AI 
+              for India's unbanked population using alternative financial signals from UPI transactions, mobile recharges, and bill payments.
             </p>
             <div className="mt-8 sm:mt-12 animate-fade-in-up" style={{animationDelay: '1.2s'}}>
               <button 

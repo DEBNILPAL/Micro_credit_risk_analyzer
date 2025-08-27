@@ -48,7 +48,7 @@ const MainApp: React.FC = () => {
             className="group flex items-center text-slate-600 hover:text-brand-600 transition-all duration-200 hover:bg-brand-50 px-3 py-2 rounded-xl"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="font-medium text-sm sm:text-base">Back to Landing</span>
+            <span className="font-medium text-sm sm:text-base">Back to Home</span>
           </button>
         </div>
       </div>
