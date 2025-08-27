@@ -1,11 +1,1 @@
-[phases.setup]
-nixPkgs = ['python39']
-
-[phases.install]
-cmds = ['cd backend && pip install -r requirements_simple.txt']
-
-[phases.build]
-cmds = ['echo "Build complete"']
-
-[start]
-cmd = 'cd backend && python simple_main.py'
+# Remove nixpacks.toml to let Railway auto-detect Python
