@@ -1,8 +1,2 @@
-[variables]
-NIXPACKS_PYTHON_VERSION = "3.11"
-
-[phases.install]
-cmds = ['pip install fastapi uvicorn --break-system-packages']
-
-[start]
-cmd = 'python main.py'
+# This file is intentionally empty to prevent Railway from using Nixpacks
+# Railway will use Dockerfile instead
