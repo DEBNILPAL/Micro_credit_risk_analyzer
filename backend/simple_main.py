@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import asyncio
+import os
 
 # Simple FastAPI app for basic functionality
 app = FastAPI(title="Micro Credit Risk Analyzer - Simple Backend")
@@ -98,13 +99,14 @@ async def health_check():
     return {"status": "healthy", "message": "Backend is running successfully"}
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
     print("=" * 50)
     print("🚀 Starting Micro Credit Risk Analyzer Backend")
     print("=" * 50)
-    print("📡 Server will be available at: http://localhost:8000")
-    print("📋 API Documentation: http://localhost:8000/docs")
+    print(f"📡 Server will be available at: http://0.0.0.0:{port}")
+    print(f"📋 API Documentation: http://0.0.0.0:{port}/docs")
     print("🔗 Frontend should connect automatically")
     print("=" * 50)
     print()
     
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
