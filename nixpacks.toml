@@ -1,5 +1,8 @@
-[phases.setup]
-nixPkgs = ['python3', 'python3Packages.fastapi', 'python3Packages.uvicorn']
+[providers]
+python = "3.11"
+
+[phases.install]
+cmds = ['pip install fastapi uvicorn --break-system-packages']
 
 [start]
 cmd = 'python3 main.py'
